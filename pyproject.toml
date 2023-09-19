@@ -1,0 +1,21 @@
+[build-system]
+requires = ["hatchling", "pydantic"]
+build-backend = "hatchling.build"
+[project]
+name = "dyntamic"
+version = "0.0.1"
+authors = [
+  { name="RC Max", email="06102011b@gmail.com" },
+]
+description = "A light package to generate pydantic models dynamically from JSON Schema"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/c32168/dyntamic"
+"Bug Tracker" = "https://github.com/c32168/dyntamic/issues"
