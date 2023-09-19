@@ -3,7 +3,7 @@ requires = ["hatchling", "pydantic"]
 build-backend = "hatchling.build"
 [project]
 name = "dyntamic"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
   { name="RC Max", email="06102011b@gmail.com" },
 ]

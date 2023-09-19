@@ -1,4 +1,4 @@
-from dyntamic import factory
+from dyntamic.factory import DyntamicFactory
 
 
 def test_schema_generation():
@@ -95,7 +95,7 @@ def test_schema_generation():
         "title": "TestSchema",
         "type": "object"
     }
-    f = factory.DyntamicFactory(schema)
+    f = DyntamicFactory(schema, ref_template="$defs")
     model = f.make()
     assert model
     sample_data = {

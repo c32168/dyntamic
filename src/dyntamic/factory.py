@@ -4,7 +4,6 @@ import typing
 from pydantic import create_model
 from pydantic.fields import Field
 
-
 Model = typing.TypeVar('Model', bound='BaseModel')
 
 
@@ -21,7 +20,8 @@ class DyntamicFactory:
 
     def __init__(self,
                  json_schema: dict,
-                 base_model: type[Model] | tuple[type[Model], ...] | None = None
+                 base_model: type[Model] | tuple[type[Model], ...] | None = None,
+                 ref_template: str = "#/$defs/"
                  ) -> None:
         """
         Creates a dynamic pydantic model from a JSONSchema, dumped from and existing Pydantic model elsewhere.
@@ -39,7 +39,8 @@ class DyntamicFactory:
         self.class_type = json_schema.get('type')
         self.required = json_schema.get('required', False)
         self.raw_fields = json_schema.get('properties')
-        self.definitions = json_schema.get('$defs')
+        self.ref_template = ref_template
+        self.definitions = json_schema.get(ref_template)
         self.fields = {}
         self.model_fields = {}
         self._base_model = base_model
@@ -54,14 +55,15 @@ class DyntamicFactory:
                 factory = self.TYPES.get(self.raw_fields[field].get('type'))
                 if factory == list:
                     items = self.raw_fields[field].get('items')
-                    if '$ref' in items:
-                        self._make_nested(items.get('$ref'), field)
+                    if self.ref_template in items:
+                        self._make_nested(items.get(self.ref_template), field)
                 self._make_field(factory, field, self.raw_fields.get('title'))
         return create_model(self.class_name, __base__=self._base_model, **self.model_fields)
 
     def _make_nested(self, model_name: str, field) -> None:
         """Create a nested model"""
-        level = DyntamicFactory({"$defs": self.definitions} | self.definitions.get(model_name))
+        level = DyntamicFactory({self.ref_template: self.definitions} | self.definitions.get(model_name),
+                                ref_template=self.ref_template)
         level.make()
         model = create_model(model_name, **level.model_fields)
         self._make_field(model, field, field)
